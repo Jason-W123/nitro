@@ -960,7 +960,7 @@ func (s *TransactionStreamer) ExpectChosenSequencer() error {
 }
 
 func (s *TransactionStreamer) WriteMessageFromSequencer(
-	pos arbutil.MessageIndex,
+	msgIdx arbutil.MessageIndex,
 	msgWithMeta arbostypes.MessageWithMetadata,
 	msgResult execution.MessageResult,
 ) error {
@@ -972,17 +972,20 @@ func (s *TransactionStreamer) WriteMessageFromSequencer(
 	}
 	defer s.insertionMutex.Unlock()
 
-	msgCount, err := s.GetMessageCount()
-	if err != nil {
+	headMsgIdx, err := s.GetHeadMessageIndex()
+	nextHeadMsgIdx := headMsgIdx + 1
+	if errors.Is(err, ErrNoMessages) {
+		nextHeadMsgIdx = 0
+	} else if err != nil {
 		return err
 	}
 
-	if msgCount != pos {
-		return fmt.Errorf("wrong pos got %d expected %d", pos, msgCount)
+	if msgIdx != nextHeadMsgIdx {
+		return fmt.Errorf("wrong msgIdx got %d expected %d", msgIdx, nextHeadMsgIdx)
 	}
 
 	if s.coordinator != nil {
-		if err := s.coordinator.SequencingMessage(pos, &msgWithMeta); err != nil {
+		if err := s.coordinator.SequencingMessage(msgIdx, &msgWithMeta); err != nil {
 			return err
 		}
 	}
@@ -992,10 +995,10 @@ func (s *TransactionStreamer) WriteMessageFromSequencer(
 		BlockHash:       &msgResult.BlockHash,
 	}
 
-	if err := s.writeMessages(pos, []arbostypes.MessageWithMetadataAndBlockHash{msgWithBlockHash}, nil); err != nil {
+	if err := s.writeMessages(msgIdx, []arbostypes.MessageWithMetadataAndBlockHash{msgWithBlockHash}, nil); err != nil {
 		return err
 	}
-	s.broadcastMessages([]arbostypes.MessageWithMetadataAndBlockHash{msgWithBlockHash}, pos)
+	s.broadcastMessages([]arbostypes.MessageWithMetadataAndBlockHash{msgWithBlockHash}, msgIdx)
 
 	return nil
 }
