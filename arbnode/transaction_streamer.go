@@ -521,8 +521,8 @@ func (s *TransactionStreamer) GetProcessedMessageCount() (arbutil.MessageIndex, 
 	return msgCount, nil
 }
 
-func (s *TransactionStreamer) AddMessages(pos arbutil.MessageIndex, messagesAreConfirmed bool, messages []arbostypes.MessageWithMetadata) error {
-	return s.AddMessagesAndEndBatch(pos, messagesAreConfirmed, messages, nil)
+func (s *TransactionStreamer) AddMessages(firstMsgIdx arbutil.MessageIndex, messagesAreConfirmed bool, messages []arbostypes.MessageWithMetadata) error {
+	return s.AddMessagesAndEndBatch(firstMsgIdx, messagesAreConfirmed, messages, nil)
 }
 
 func (s *TransactionStreamer) FeedPendingMessageCount() arbutil.MessageIndex {
@@ -678,7 +678,7 @@ func endBatch(batch ethdb.Batch) error {
 	return batch.Write()
 }
 
-func (s *TransactionStreamer) AddMessagesAndEndBatch(pos arbutil.MessageIndex, messagesAreConfirmed bool, messages []arbostypes.MessageWithMetadata, batch ethdb.Batch) error {
+func (s *TransactionStreamer) AddMessagesAndEndBatch(firstMsgIdx arbutil.MessageIndex, messagesAreConfirmed bool, messages []arbostypes.MessageWithMetadata, batch ethdb.Batch) error {
 	messagesWithBlockHash := make([]arbostypes.MessageWithMetadataAndBlockHash, 0, len(messages))
 	for _, message := range messages {
 		messagesWithBlockHash = append(messagesWithBlockHash, arbostypes.MessageWithMetadataAndBlockHash{
@@ -688,9 +688,9 @@ func (s *TransactionStreamer) AddMessagesAndEndBatch(pos arbutil.MessageIndex, m
 
 	if messagesAreConfirmed {
 		// Trim confirmed messages from l1pricedataCache
-		s.exec.MarkFeedStart(pos + arbutil.MessageIndex(len(messages)))
+		s.exec.MarkFeedStart(firstMsgIdx + arbutil.MessageIndex(len(messages)))
 		s.reorgMutex.RLock()
-		dups, _, _, err := s.countDuplicateMessages(pos, messagesWithBlockHash, nil)
+		dups, _, _, err := s.countDuplicateMessages(firstMsgIdx, messagesWithBlockHash, nil)
 		s.reorgMutex.RUnlock()
 		if err != nil {
 			return err
@@ -707,7 +707,7 @@ func (s *TransactionStreamer) AddMessagesAndEndBatch(pos arbutil.MessageIndex, m
 	s.insertionMutex.Lock()
 	defer s.insertionMutex.Unlock()
 
-	return s.addMessagesAndEndBatchImpl(pos, messagesAreConfirmed, messagesWithBlockHash, batch)
+	return s.addMessagesAndEndBatchImpl(firstMsgIdx, messagesAreConfirmed, messagesWithBlockHash, batch)
 }
 
 func (s *TransactionStreamer) getPrevPrevDelayedRead(pos arbutil.MessageIndex) (uint64, error) {
