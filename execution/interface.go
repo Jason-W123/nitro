@@ -32,7 +32,7 @@ type ExecutionClient interface {
 	Reorg(count arbutil.MessageIndex, newMessages []arbostypes.MessageWithMetadataAndBlockHash, oldMessages []*arbostypes.MessageWithMetadata) ([]*MessageResult, error)
 	HeadMessageIndex() (arbutil.MessageIndex, error)
 	HeadMessageIndexSync(t *testing.T) (arbutil.MessageIndex, error)
-	ResultAtPos(pos arbutil.MessageIndex) (*MessageResult, error)
+	ResultAtMessageIndex(msgIdx arbutil.MessageIndex) (*MessageResult, error)
 }
 
 // needed for validators / stakers

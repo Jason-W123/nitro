@@ -327,8 +327,8 @@ func (n *ExecutionNode) NextDelayedMessageNumber() (uint64, error) {
 func (n *ExecutionNode) SequenceDelayedMessage(message *arbostypes.L1IncomingMessage, delayedSeqNum uint64) error {
 	return n.ExecEngine.SequenceDelayedMessage(message, delayedSeqNum)
 }
-func (n *ExecutionNode) ResultAtPos(pos arbutil.MessageIndex) (*execution.MessageResult, error) {
-	return n.ExecEngine.ResultAtPos(pos)
+func (n *ExecutionNode) ResultAtMessageIndex(msgIdx arbutil.MessageIndex) (*execution.MessageResult, error) {
+	return n.ExecEngine.ResultAtMessageIndex(msgIdx)
 }
 func (n *ExecutionNode) ArbOSVersionForMessageNumber(messageNum arbutil.MessageIndex) (uint64, error) {
 	return n.ExecEngine.ArbOSVersionForMessageNumber(messageNum)

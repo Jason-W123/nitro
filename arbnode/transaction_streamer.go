@@ -1103,7 +1103,7 @@ func (s *TransactionStreamer) ResultAtCount(count arbutil.MessageIndex) (*execut
 	}
 	log.Info(FailedToGetMsgResultFromDB, "count", count)
 
-	msgResult, err := s.exec.ResultAtPos(pos)
+	msgResult, err := s.exec.ResultAtMessageIndex(pos)
 	if err != nil {
 		return nil, err
 	}
