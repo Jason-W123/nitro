@@ -1084,13 +1084,8 @@ func (s *TransactionStreamer) writeMessages(firstMsgIdx arbutil.MessageIndex, me
 	return nil
 }
 
-func (s *TransactionStreamer) ResultAtCount(count arbutil.MessageIndex) (*execution.MessageResult, error) {
-	if count == 0 {
-		return &execution.MessageResult{}, nil
-	}
-	pos := count - 1
-
-	key := dbKey(messageResultPrefix, uint64(pos))
+func (s *TransactionStreamer) ResultAtMessageIndex(msgIdx arbutil.MessageIndex) (*execution.MessageResult, error) {
+	key := dbKey(messageResultPrefix, uint64(msgIdx))
 	data, err := s.db.Get(key)
 	if err == nil {
 		var msgResult execution.MessageResult
@@ -1101,22 +1096,22 @@ func (s *TransactionStreamer) ResultAtCount(count arbutil.MessageIndex) (*execut
 	} else if !dbutil.IsErrNotFound(err) {
 		return nil, err
 	}
-	log.Info(FailedToGetMsgResultFromDB, "count", count)
+	log.Info(FailedToGetMsgResultFromDB, "msgIdx", msgIdx)
 
-	msgResult, err := s.exec.ResultAtMessageIndex(pos)
+	msgResult, err := s.exec.ResultAtMessageIndex(msgIdx)
 	if err != nil {
 		return nil, err
 	}
 	// Stores result in Consensus DB in a best-effort manner
 	batch := s.db.NewBatch()
-	err = s.storeResult(pos, *msgResult, batch)
+	err = s.storeResult(msgIdx, *msgResult, batch)
 	if err != nil {
-		log.Warn("Failed to store result at ResultAtCount", "err", err)
+		log.Warn("Failed to store result at ResultAtMessageIndex", "err", err)
 		return msgResult, nil
 	}
 	err = batch.Write()
 	if err != nil {
-		log.Warn("Failed to store result at ResultAtCount", "err", err)
+		log.Warn("Failed to store result at ResultAtMessageIndex", "err", err)
 		return msgResult, nil
 	}
 
