@@ -511,7 +511,7 @@ func (s *TransactionStreamer) GetProcessedMessageCount() (arbutil.MessageIndex, 
 	if err != nil {
 		return 0, err
 	}
-	digestedHead, err := s.exec.HeadMessageNumber()
+	digestedHead, err := s.exec.HeadMessageIndex()
 	if err != nil {
 		return 0, err
 	}
@@ -1167,7 +1167,7 @@ func (s *TransactionStreamer) ExecuteNextMsg(ctx context.Context, exec execution
 		return false
 	}
 	s.execLastMsgCount = msgCount
-	pos, err := s.exec.HeadMessageNumber()
+	pos, err := s.exec.HeadMessageIndex()
 	if err != nil {
 		log.Error("feedOneMsg failed to get exec engine message count", "err", err)
 		return false

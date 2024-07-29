@@ -315,11 +315,11 @@ func (n *ExecutionNode) DigestMessage(num arbutil.MessageIndex, msg *arbostypes.
 func (n *ExecutionNode) Reorg(count arbutil.MessageIndex, newMessages []arbostypes.MessageWithMetadataAndBlockHash, oldMessages []*arbostypes.MessageWithMetadata) ([]*execution.MessageResult, error) {
 	return n.ExecEngine.Reorg(count, newMessages, oldMessages)
 }
-func (n *ExecutionNode) HeadMessageNumber() (arbutil.MessageIndex, error) {
-	return n.ExecEngine.HeadMessageNumber()
+func (n *ExecutionNode) HeadMessageIndex() (arbutil.MessageIndex, error) {
+	return n.ExecEngine.HeadMessageIndex()
 }
-func (n *ExecutionNode) HeadMessageNumberSync(t *testing.T) (arbutil.MessageIndex, error) {
-	return n.ExecEngine.HeadMessageNumberSync(t)
+func (n *ExecutionNode) HeadMessageIndexSync(t *testing.T) (arbutil.MessageIndex, error) {
+	return n.ExecEngine.HeadMessageIndexSync(t)
 }
 func (n *ExecutionNode) NextDelayedMessageNumber() (uint64, error) {
 	return n.ExecEngine.NextDelayedMessageNumber()
