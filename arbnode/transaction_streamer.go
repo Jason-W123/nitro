@@ -801,7 +801,7 @@ func (s *TransactionStreamer) countDuplicateMessages(
 	return curMsg, false, nil, nil
 }
 
-func (s *TransactionStreamer) logReorg(pos arbutil.MessageIndex, dbMsg *arbostypes.MessageWithMetadata, newMsg *arbostypes.MessageWithMetadata, confirmed bool) {
+func (s *TransactionStreamer) logReorg(msgIdx arbutil.MessageIndex, dbMsg *arbostypes.MessageWithMetadata, newMsg *arbostypes.MessageWithMetadata, confirmed bool) {
 	sendLog := confirmed
 	if time.Now().After(s.nextAllowedFeedReorgLog) {
 		sendLog = true
@@ -810,7 +810,7 @@ func (s *TransactionStreamer) logReorg(pos arbutil.MessageIndex, dbMsg *arbostyp
 		s.nextAllowedFeedReorgLog = time.Now().Add(time.Minute)
 		log.Warn("TransactionStreamer: Reorg detected!",
 			"confirmed", confirmed,
-			"pos", pos,
+			"msgIdx", msgIdx,
 			"got-delayed", newMsg.DelayedMessagesRead,
 			"got-header", newMsg.Message.Header,
 			"db-delayed", dbMsg.DelayedMessagesRead,
