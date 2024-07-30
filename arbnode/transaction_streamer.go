@@ -688,12 +688,12 @@ func (s *TransactionStreamer) AddMessagesAndEndBatch(firstMsgIdx arbutil.Message
 		// Trim confirmed messages from l1pricedataCache
 		s.exec.MarkFeedStart(firstMsgIdx + arbutil.MessageIndex(len(messages)))
 		s.reorgMutex.RLock()
-		dups, _, _, err := s.countDuplicateMessages(firstMsgIdx, messagesWithBlockHash, nil)
+		numberOfDuplicates, _, _, err := s.countDuplicateMessages(firstMsgIdx, messagesWithBlockHash, nil)
 		s.reorgMutex.RUnlock()
 		if err != nil {
 			return err
 		}
-		if dups == len(messages) {
+		if numberOfDuplicates == len(messages) {
 			return endBatch(batch)
 		}
 		// cant keep reorg lock when catching insertionMutex.
