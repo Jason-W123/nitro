@@ -29,7 +29,7 @@ var ErrSequencerInsertLockTaken = errors.New("insert lock taken")
 // always needed
 type ExecutionClient interface {
 	DigestMessage(msgIdx arbutil.MessageIndex, msg *arbostypes.MessageWithMetadata, msgForPrefetch *arbostypes.MessageWithMetadata) (*MessageResult, error)
-	Reorg(newHeadMsgIdx arbutil.MessageIndex, newMessages []arbostypes.MessageWithMetadataAndBlockHash, oldMessages []*arbostypes.MessageWithMetadata) ([]*MessageResult, error)
+	Reorg(lastMsgIdxToKeep arbutil.MessageIndex, newMessages []arbostypes.MessageWithMetadataAndBlockHash, oldMessages []*arbostypes.MessageWithMetadata) ([]*MessageResult, error)
 	HeadMessageIndex() (arbutil.MessageIndex, error)
 	HeadMessageIndexSync(t *testing.T) (arbutil.MessageIndex, error)
 	ResultAtMessageIndex(msgIdx arbutil.MessageIndex) (*MessageResult, error)
