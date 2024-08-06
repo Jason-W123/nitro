@@ -560,6 +560,12 @@ func Precompiles() map[addr]ArbosPrecompile {
 	ArbOwnerPublic.methodsByName["GetBrotliCompressionLevel"].arbosVersion = 20
 	ArbOwnerPublic.methodsByName["GetScheduledUpgrade"].arbosVersion = 20
 
+	ArbHi := insert(MakePrecompile(templates.ArbHiMetaData, &ArbHi{Address: hex("11a")})) // 0x011a here is an example address
+
+	for _, method := range ArbHi.methods {
+		method.arbosVersion = 76
+	}
+
 	ArbRetryableImpl := &ArbRetryableTx{Address: types.ArbRetryableTxAddress}
 	ArbRetryable := insert(MakePrecompile(templates.ArbRetryableTxMetaData, ArbRetryableImpl))
 	arbos.ArbRetryableTxAddress = ArbRetryable.address
