@@ -580,7 +580,7 @@ func Precompiles() map[addr]ArbosPrecompile {
 	ArbWasmCache.methodsByName["CacheCodehash"].maxArbosVersion = params.ArbosVersion_Stylus
 	ArbWasmCache.methodsByName["CacheProgram"].arbosVersion = params.ArbosVersion_StylusFixes
 
-	ArbHi := insert(MakePrecompile(pgen.ArbHiMetaData, &ArbHi{Address: hex("11a")})) // 0x011a here is an example address
+	ArbHi := insert(MakePrecompile(pgen.ArbHiMetaData, &ArbHi{Address: types.ArbHiAddress})) // 0x011a here is an example address
 	ArbHi.arbosVersion = 21
 	for _, method := range ArbHi.methods {
 		method.arbosVersion = 21
